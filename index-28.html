@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f5bd16">
+<title>منوی دیجیتال کافه</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--yellow:#f5bd16;--yellow-dark:#d99d00;--yellow-light:#fff5cf;--dark:#252525;--gray:#777;--white:#fff;--border:#eadba6;--shadow:0 8px 18px rgba(119,87,0,.16)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Vazirmatn",Tahoma,sans-serif;background:linear-gradient(135deg,#fffdf6,#fff7d7);color:var(--dark);min-height:100vh}
+header{background:linear-gradient(135deg,#f6c51f,#e7a900);padding:32px 20px 70px;text-align:center;color:#fff;border-bottom-left-radius:45px;border-bottom-right-radius:45px;box-shadow:0 8px 20px rgba(156,105,0,.25)}
+.logo{width:82px;height:82px;display:flex;justify-content:center;align-items:center;margin:0 auto 15px;border-radius:50%;background:#fff;font-size:42px;box-shadow:inset 0 -5px 0 rgba(0,0,0,.08),0 8px 0 rgba(130,85,0,.25)}
+header h1{font-size:clamp(25px,5vw,38px);margin-bottom:8px;font-weight:800} header p{font-size:14px;opacity:.95}
+.container{width:min(1180px,92%);margin:-38px auto 45px;position:relative}
+.toolbar{background:rgba(255,255,255,.96);border:1px solid var(--border);border-radius:22px;padding:18px;box-shadow:var(--shadow);margin-bottom:28px}
+.search-box{display:flex;align-items:center;background:#fffdf5;border:2px solid #f0d877;border-radius:15px;padding:0 15px;margin-bottom:16px}.search-box span{font-size:22px;margin-left:8px}.search-box input{width:100%;border:none;outline:none;background:transparent;padding:14px 5px;font-family:inherit;font-size:15px;color:var(--dark)}.search-box input::placeholder{color:#999}
+.categories{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}.categories::-webkit-scrollbar{height:5px}.categories::-webkit-scrollbar-thumb{background:var(--yellow);border-radius:20px}
+.category-btn{flex:0 0 auto;border:1px solid #ecd789;cursor:pointer;padding:11px 17px;border-radius:13px;background:#fff;color:var(--dark);font-family:inherit;font-size:13px;font-weight:700;box-shadow:0 5px 0 #d8bc62,0 8px 13px rgba(148,112,0,.12);transition:.2s ease}.category-btn:hover{transform:translateY(-2px)}.category-btn:active{transform:translateY(4px);box-shadow:0 1px 0 #d8bc62}.category-btn.active{color:#fff;background:var(--yellow);border-color:var(--yellow-dark);box-shadow:0 5px 0 var(--yellow-dark),0 8px 13px rgba(148,112,0,.2)}
+.menu-section{margin-bottom:38px}.section-title{display:flex;align-items:center;gap:10px;margin-bottom:18px;color:#624b00;font-size:23px;font-weight:800}.section-title:after{content:"";height:3px;flex:1;background:linear-gradient(to left,transparent,var(--yellow));border-radius:20px}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:20px}.menu-card{background:var(--white);border:1px solid var(--border);border-radius:21px;box-shadow:var(--shadow);padding:18px;transition:.25s ease}.menu-card:hover{transform:translateY(-6px);box-shadow:0 14px 25px rgba(119,87,0,.22)}.item-name{color:#362d13;font-size:17px;font-weight:800;margin-bottom:13px;line-height:1.8}
+.single-price{display:flex;justify-content:space-between;align-items:center;background:var(--yellow-light);border-radius:11px;padding:10px 12px;color:#765b00;font-size:14px;font-weight:800}.price-list{display:grid;gap:7px}.price-row{display:flex;justify-content:space-between;align-items:center;background:#fffbea;border-radius:10px;padding:8px 10px;border-right:3px solid var(--yellow);font-size:13px}.price-row strong{color:#765b00;font-size:14px}.not-available{color:#a08327;background:#faf5df;border:1px dashed #ddc66d;border-radius:10px;text-align:center;padding:10px;font-size:13px;font-weight:600}.no-result{display:none;background:#fff;border:1px solid var(--border);padding:30px;border-radius:18px;text-align:center;color:var(--gray);margin-top:20px}footer{text-align:center;color:#866e24;font-size:13px;padding:0 20px 30px}
+@media(max-width:600px){header{padding-top:25px}.container{width:94%}.menu-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.menu-card{padding:12px}.item-name{font-size:14px;min-height:42px;line-height:1.7}.single-price,.price-row{font-size:11px;padding:8px}.price-row strong{font-size:12px}.not-available{font-size:11px;padding:8px 4px}}@media(max-width:360px){.menu-grid{grid-template-columns:1fr}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+</head>
+<body>
+<header><div class="logo">☕</div><h1>منوی کافه</h1><p>با عشق تهیه شده برای لحظه‌های شیرین شما</p></header>
+<main class="container">
+<div class="toolbar">
+<div class="search-box"><span>🔍</span><input type="text" id="searchInput" placeholder="جست‌وجوی آیتم موردنظر..."></div>
+<div class="categories" id="categories">
+<button class="category-btn active" data-category="all">همه منو</button>
+<button class="category-btn" data-category="espresso">☕ اسپرسوبار</button>
+<button class="category-btn" data-category="ice">🥤 نوشیدنی‌های آیس</button>
+<button class="category-btn" data-category="shake">🥤 شیک‌ها</button>
+<button class="category-btn" data-category="tea">☕ چای‌ها</button>
+<button class="category-btn" data-category="hot">🍫 نوشیدنی‌های گرم</button>
+</div></div>
+<div id="menuContainer"></div><div class="no-result" id="noResult">آیتمی با این مشخصات پیدا نشد.</div><div class="no-result" id="loadError"></div>
+</main>
+<footer>تمامی قیمت‌ها به هزار تومان هستند</footer>
+<script>
+    const supabaseClient = window.supabase.createClient(
+      window.SUPABASE_URL,
+      window.SUPABASE_PUBLISHABLE_KEY
+    );
+
+    const categoryTitles = {
+      espresso: "☕ اسپرسوبار",
+      ice: "🥤 نوشیدنی‌های آیس",
+      shake: "🥤 شیک‌ها",
+      tea: "☕ چای‌ها",
+      hot: "🍫 نوشیدنی‌های گرم"
+    };
+
+    const menuContainer = document.getElementById("menuContainer");
+    const searchInput = document.getElementById("searchInput");
+    const noResult = document.getElementById("noResult");
+    const loadError = document.getElementById("loadError");
+    const categoryButtons = document.querySelectorAll(".category-btn");
+
+    let menuData = [];
+    let selectedCategory = "all";
+
+    function formatPrice(price) {
+      const n = Number(price);
+      return (Number.isFinite(n) ? n.toLocaleString("fa-IR") : price) + " هزار تومان";
+    }
+
+    function createImage(item) {
+      const wrap = document.createElement("div");
+      wrap.className = "item-image";
+      const url = item.image_url ? String(item.image_url).trim() : "";
+      if (url) {
+        const img = document.createElement("img");
+        img.src = url;
+        img.alt = item.name || "آیتم منو";
+        img.loading = "lazy";
+        img.addEventListener("error", function () {
+          wrap.innerHTML = '<div class="image-placeholder"><div class="icon">☕</div><small>تصویر در دسترس نیست</small></div>';
+        });
+        wrap.appendChild(img);
+      } else {
+        wrap.innerHTML = '<div class="image-placeholder"><div class="icon">☕</div><small>بدون عکس</small></div>';
+      }
+      return wrap;
+    }
+
+    function createPrice(item) {
+      if (item.unavailable) {
+        const d = document.createElement("div");
+        d.className = "not-available";
+        d.textContent = "قیمت درج نشده";
+        return d;
+      }
+
+      const coffeePrices = [
+        ["عربیکا", item.arabica_price],
+        ["میکس", item.mix_price],
+        ["روبستا", item.robusta_price]
+      ].filter(function (entry) {
+        return entry[1] !== null && entry[1] !== undefined && entry[1] !== "";
+      });
+
+      if (coffeePrices.length) {
+        const list = document.createElement("div");
+        list.className = "price-list";
+        coffeePrices.forEach(function (entry) {
+          const row = document.createElement("div");
+          row.className = "price-row";
+          const label = document.createElement("span");
+          label.textContent = entry[0];
+          const value = document.createElement("strong");
+          value.textContent = formatPrice(entry[1]);
+          row.appendChild(label);
+          row.appendChild(value);
+          list.appendChild(row);
+        });
+        return list;
+      }
+
+      const single = document.createElement("div");
+      single.className = "single-price";
+      const label = document.createElement("span");
+      label.textContent = "قیمت";
+      const value = document.createElement("strong");
+      value.textContent = formatPrice(item.price);
+      single.appendChild(label);
+      single.appendChild(value);
+      return single;
+    }
+
+    function createMenuCard(item) {
+      const card = document.createElement("article");
+      card.className = "menu-card";
+      card.appendChild(createImage(item));
+
+      const content = document.createElement("div");
+      content.className = "card-content";
+      const name = document.createElement("h3");
+      name.className = "item-name";
+      name.textContent = item.name || "بدون نام";
+      content.appendChild(name);
+      content.appendChild(createPrice(item));
+      card.appendChild(content);
+      return card;
+    }
+
+    function renderMenu() {
+      const searchText = searchInput.value.trim().toLowerCase();
+      menuContainer.innerHTML = "";
+      noResult.style.display = "none";
+
+      const sections = {};
+      menuData.forEach(function (item) {
+        const category = item.category || "hot";
+        if (!sections[category]) sections[category] = [];
+        sections[category].push(item);
+      });
+
+      let total = 0;
+
+      Object.keys(categoryTitles).forEach(function (category) {
+        if (selectedCategory !== "all" && selectedCategory !== category) return;
+
+        const filtered = (sections[category] || []).filter(function (item) {
+          return String(item.name || "").toLowerCase().includes(searchText);
+        });
+
+        if (!filtered.length) return;
+        total += filtered.length;
+
+        const section = document.createElement("section");
+        section.className = "menu-section";
+        const title = document.createElement("h2");
+        title.className = "section-title";
+        title.textContent = categoryTitles[category];
+        const grid = document.createElement("div");
+        grid.className = "menu-grid";
+
+        filtered.sort(function (a, b) {
+          return Number(a.sort_order || 0) - Number(b.sort_order || 0);
+        }).forEach(function (item) {
+          grid.appendChild(createMenuCard(item));
+        });
+
+        section.appendChild(title);
+        section.appendChild(grid);
+        menuContainer.appendChild(section);
+      });
+
+      noResult.style.display = total === 0 ? "block" : "none";
+    }
+
+    async function loadMenu() {
+      menuContainer.innerHTML = '<div class="no-result" style="display:block">در حال بارگذاری منو...</div>';
+      loadError.style.display = "none";
+
+      const result = await supabaseClient
+        .from("products")
+        .select("*")
+        .order("sort_order", { ascending: true })
+        .order("id", { ascending: true });
+
+      if (result.error) {
+        menuContainer.innerHTML = "";
+        loadError.textContent = "منو بارگذاری نشد. تنظیمات Supabase یا دسترسی جدول را بررسی کنید.";
+        loadError.style.display = "block";
+        console.error(result.error);
+        return;
+      }
+
+      menuData = result.data || [];
+      renderMenu();
+    }
+
+    categoryButtons.forEach(function (button) {
+      button.addEventListener("click", function () {
+        categoryButtons.forEach(function (btn) { btn.classList.remove("active"); });
+        button.classList.add("active");
+        selectedCategory = button.getAttribute("data-category");
+        renderMenu();
+      });
+    });
+
+    searchInput.addEventListener("input", renderMenu);
+    loadMenu();
+  </script>
+  </body>
+</html>

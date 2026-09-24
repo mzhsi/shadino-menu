@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5bd16">
+  <title>پنل مدیریت منوی کافه</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <style>
+    :root{--yellow:#f5bd16;--yellow-dark:#d99d00;--yellow-light:#fff5cf;--dark:#252525;--gray:#777;--white:#fff;--border:#eadba6;--danger:#b42318;--success:#16794a}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:"Vazirmatn",Tahoma,sans-serif;background:linear-gradient(135deg,#fffdf6,#fff7d7);color:var(--dark);min-height:100vh}
+    .wrap{width:min(1100px,94%);margin:24px auto 50px}
+    .top{background:linear-gradient(135deg,#f6c51f,#e7a900);color:#fff;padding:22px;border-radius:24px;box-shadow:0 10px 24px rgba(156,105,0,.20);display:flex;justify-content:space-between;align-items:center;gap:15px}.top h1{font-size:clamp(22px,4vw,32px)}.top p{opacity:.95;margin-top:5px;font-size:13px}
+    .panel{background:#fff;border:1px solid var(--border);border-radius:22px;padding:20px;box-shadow:0 8px 18px rgba(119,87,0,.12);margin-top:18px}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.full{grid-column:1/-1}label{display:block;font-size:13px;font-weight:800;margin-bottom:7px;color:#5d4c12}
+    input,select,button{font:inherit}input,select{width:100%;padding:12px;border:1px solid #ddcb82;border-radius:12px;background:#fffdf6;outline:none}input:focus,select:focus{border-color:var(--yellow-dark);box-shadow:0 0 0 3px rgba(245,189,22,.18)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}.btn{border:0;border-radius:12px;padding:11px 16px;cursor:pointer;font-weight:800}.primary{background:var(--yellow);color:#3b2f00}.secondary{background:#fff;border:1px solid #d9c784}.danger{background:#fff1f0;color:var(--danger);border:1px solid #f2c6c1}.logout{background:#fff;color:#6a5300}.hidden{display:none!important}
+    .message{padding:11px 13px;border-radius:12px;margin-bottom:15px;font-size:13px}.ok{background:#effaf3;color:#0d6b3f;border:1px solid #b9e6ca}.err{background:#fff4f2;color:#9b1c10;border:1px solid #f0c4bf}
+    .products{display:grid;gap:12px;margin-top:15px}.item{background:#fffdf6;border:1px solid #e8d89d;border-radius:16px;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:12px}.item-main strong{font-size:16px}.meta{color:#78662a;font-size:12px;margin-top:5px}.item-actions{display:flex;gap:7px;flex-wrap:wrap}.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:var(--yellow-light);font-size:11px;font-weight:800;margin-right:5px}
+    .login{max-width:520px;margin:60px auto}.login h1{text-align:center;margin-bottom:7px}.login p{text-align:center;color:var(--gray);margin-bottom:18px}.price-fields{margin-top:12px;padding:12px;border-radius:14px;background:#fff8dc}.muted{color:var(--gray);font-size:12px}
+    @media(max-width:700px){.grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.item{align-items:flex-start;flex-direction:column}.item-actions{width:100%}.item-actions .btn{flex:1}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <section id="loginView" class="panel login">
+    <h1>ورود به پنل مدیریت</h1>
+    <p>با ایمیل و رمز صاحب کافه وارد شوید.</p>
+    <div id="loginMessage"></div>
+    <div style="display:grid;gap:12px">
+      <div><label for="loginEmail">ایمیل</label><input id="loginEmail" type="email" autocomplete="username"></div>
+      <div><label for="loginPassword">رمز عبور</label><input id="loginPassword" type="password" autocomplete="current-password"></div>
+      <button id="loginBtn" class="btn primary">ورود</button>
+    </div>
+  </section>
+
+  <section id="adminView" class="hidden">
+    <div class="top">
+      <div><h1>پنل مدیریت منوی کافه</h1><p>تغییر قیمت، افزودن و حذف آیتم‌ها</p></div>
+      <button id="logoutBtn" class="btn logout">خروج</button>
+    </div>
+
+    <div class="panel">
+      <div id="adminMessage"></div>
+      <h2 id="formTitle" style="margin-bottom:15px">افزودن آیتم جدید</h2>
+      <div class="grid">
+        <div><label for="name">نام آیتم</label><input id="name" type="text" placeholder="مثلاً لاته"></div>
+        <div><label for="category">دسته‌بندی</label><select id="category"><option value="espresso">اسپرسوبار</option><option value="ice">نوشیدنی‌های آیس</option><option value="shake">شیک‌ها</option><option value="tea">چای‌ها</option><option value="hot">نوشیدنی‌های گرم</option></select></div>
+        <div><label for="mode">نوع قیمت</label><select id="mode"><option value="single">یک قیمت</option><option value="coffee">سه قیمت (عربیکا / میکس / روبستا)</option></select></div>
+        <div><label for="sortOrder">ترتیب نمایش</label><input id="sortOrder" type="number" min="0" step="1" value="0"></div>
+        <div id="singleFields" class="full"><div class="price-fields"><label for="price">قیمت (هزار تومان)</label><input id="price" type="number" min="0" step="1"></div></div>
+        <div id="coffeeFields" class="full hidden"><div class="price-fields grid"><div><label for="arabica">عربیکا</label><input id="arabica" type="number" min="0" step="1"></div><div><label for="mix">میکس</label><input id="mix" type="number" min="0" step="1"></div><div class="full"><label for="robusta">روبستا</label><input id="robusta" type="number" min="0" step="1"></div></div></div>
+        <div><label for="imageUrl">لینک عکس (اختیاری)</label><input id="imageUrl" type="url" placeholder="https://..."></div>
+        <div><label for="unavailable">وضعیت</label><select id="unavailable"><option value="false">موجود / نمایش قیمت</option><option value="true">ناموجود / قیمت مخفی</option></select></div>
+        <div class="full actions"><button id="saveBtn" class="btn primary">ذخیره آیتم</button><button id="cancelEditBtn" class="btn secondary hidden">لغو ویرایش</button></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div><h2>آیتم‌های منو</h2><div class="muted">برای تغییر قیمت روی «ویرایش» بزن.</div></div><input id="searchAdmin" type="text" style="max-width:320px" placeholder="جست‌وجوی آیتم..."></div>
+      <div id="productsList" class="products"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+  const supabaseClient = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_PUBLISHABLE_KEY);
+  const loginView=document.getElementById("loginView"),adminView=document.getElementById("adminView"),loginMessage=document.getElementById("loginMessage"),adminMessage=document.getElementById("adminMessage"),productsList=document.getElementById("productsList"),searchAdmin=document.getElementById("searchAdmin"),mode=document.getElementById("mode");
+  let products=[], editingId=null;
+  const $=id=>document.getElementById(id);
+  function msg(el,text,ok=false){el.innerHTML="";const d=document.createElement("div");d.className="message "+(ok?"ok":"err");d.textContent=text;el.appendChild(d)}
+  function syncMode(){const c=mode.value==="coffee";$('singleFields').classList.toggle('hidden',c);$('coffeeFields').classList.toggle('hidden',!c)}
+  function resetForm(){editingId=null;$('formTitle').textContent='افزودن آیتم جدید';$('saveBtn').textContent='ذخیره آیتم';$('cancelEditBtn').classList.add('hidden');$('name').value='';$('category').value='espresso';$('mode').value='single';$('sortOrder').value='0';$('price').value='';$('arabica').value='';$('mix').value='';$('robusta').value='';$('imageUrl').value='';$('unavailable').value='false';syncMode()}
+  function beginEdit(item){editingId=item.id;$('formTitle').textContent='ویرایش آیتم';$('saveBtn').textContent='ذخیره تغییرات';$('cancelEditBtn').classList.remove('hidden');$('name').value=item.name||'';$('category').value=item.category||'espresso';const coffee=item.arabica_price!==null||item.mix_price!==null||item.robusta_price!==null;$('mode').value=coffee?'coffee':'single';$('sortOrder').value=item.sort_order||0;$('price').value=item.price??'';$('arabica').value=item.arabica_price??'';$('mix').value=item.mix_price??'';$('robusta').value=item.robusta_price??'';$('imageUrl').value=item.image_url||'';$('unavailable').value=item.unavailable?'true':'false';syncMode();window.scrollTo({top:0,behavior:'smooth'})}
+  async function loadProducts(){const {data,error}=await supabaseClient.from('products').select('*').order('sort_order',{ascending:true}).order('id',{ascending:true});if(error){msg(adminMessage,'خواندن محصولات انجام نشد: '+error.message);return}products=data||[];renderProducts()}
+  function renderProducts(){productsList.innerHTML='';const q=searchAdmin.value.trim().toLowerCase();const list=products.filter(p=>String(p.name||'').toLowerCase().includes(q));if(!list.length){productsList.innerHTML='<div class="muted" style="padding:15px 0">آیتمی پیدا نشد.</div>';return}list.forEach(item=>{const card=document.createElement('div');card.className='item';const main=document.createElement('div');main.className='item-main';const title=document.createElement('strong');title.textContent=item.name||'بدون نام';main.appendChild(title);const meta=document.createElement('div');meta.className='meta';meta.textContent={espresso:'اسپرسوبار',ice:'نوشیدنی‌های آیس',shake:'شیک‌ها',tea:'چای‌ها',hot:'نوشیدنی‌های گرم'}[item.category]||item.category||'بدون دسته';if(item.unavailable){const b=document.createElement('span');b.className='badge';b.textContent='ناموجود';meta.appendChild(b)}main.appendChild(meta);const pm=document.createElement('div');pm.className='meta';if(item.arabica_price!==null||item.mix_price!==null||item.robusta_price!==null){pm.textContent='عربیکا: '+(item.arabica_price??'-')+' | میکس: '+(item.mix_price??'-')+' | روبستا: '+(item.robusta_price??'-')}else{pm.textContent='قیمت: '+(item.price??'-')}main.appendChild(pm);const actions=document.createElement('div');actions.className='item-actions';const edit=document.createElement('button');edit.className='btn secondary';edit.textContent='ویرایش';edit.onclick=()=>beginEdit(item);const del=document.createElement('button');del.className='btn danger';del.textContent='حذف';del.onclick=()=>deleteProduct(item);actions.appendChild(edit);actions.appendChild(del);card.appendChild(main);card.appendChild(actions);productsList.appendChild(card)})}
+  async function deleteProduct(item){if(!confirm('آیتم «'+item.name+'» حذف شود؟'))return;const {error}=await supabaseClient.from('products').delete().eq('id',item.id);if(error){msg(adminMessage,'حذف انجام نشد: '+error.message);return}msg(adminMessage,'آیتم با موفقیت حذف شد.',true);if(editingId===item.id)resetForm();await loadProducts()}
+  async function saveProduct(){adminMessage.innerHTML='';const name=$('name').value.trim();if(!name){msg(adminMessage,'نام آیتم را وارد کن.');return}const payload={name,category:$('category').value,image_url:$('imageUrl').value.trim()||null,unavailable:$('unavailable').value==='true',sort_order:Number($('sortOrder').value||0)};if(mode.value==='coffee'){payload.price=null;payload.arabica_price=$('arabica').value===''?null:Number($('arabica').value);payload.mix_price=$('mix').value===''?null:Number($('mix').value);payload.robusta_price=$('robusta').value===''?null:Number($('robusta').value)}else{payload.price=$('price').value===''?null:Number($('price').value);payload.arabica_price=null;payload.mix_price=null;payload.robusta_price=null}let result;if(editingId===null)result=await supabaseClient.from('products').insert(payload);else result=await supabaseClient.from('products').update(payload).eq('id',editingId);if(result.error){msg(adminMessage,'ذخیره انجام نشد: '+result.error.message);return}msg(adminMessage,editingId===null?'آیتم جدید اضافه شد.':'تغییرات ذخیره شد.',true);resetForm();await loadProducts()}
+  async function checkAdminAndStart(){const {data:sd}=await supabaseClient.auth.getSession();if(!sd.session){loginView.classList.remove('hidden');adminView.classList.add('hidden');return}const uid=sd.session.user.id;const {data,error}=await supabaseClient.from('admin_users').select('user_id').eq('user_id',uid).maybeSingle();if(error||!data){await supabaseClient.auth.signOut();loginView.classList.remove('hidden');adminView.classList.add('hidden');msg(loginMessage,'این حساب مجوز ادمین ندارد.');return}loginView.classList.add('hidden');adminView.classList.remove('hidden');loginMessage.innerHTML='';await loadProducts()}
+  $('loginBtn').onclick=async()=>{loginMessage.innerHTML='';const email=$('loginEmail').value.trim(),password=$('loginPassword').value;if(!email||!password){msg(loginMessage,'ایمیل و رمز عبور را وارد کن.');return}$('loginBtn').disabled=true;const {error}=await supabaseClient.auth.signInWithPassword({email,password});$('loginBtn').disabled=false;if(error){msg(loginMessage,'ورود ناموفق بود: '+error.message);return}await checkAdminAndStart()}
+  $('logoutBtn').onclick=async()=>{await supabaseClient.auth.signOut();resetForm();products=[];productsList.innerHTML='';loginView.classList.remove('hidden');adminView.classList.add('hidden')};$('saveBtn').onclick=saveProduct;$('cancelEditBtn').onclick=resetForm;searchAdmin.oninput=renderProducts;mode.onchange=syncMode;resetForm();checkAdminAndStart();
+</script>
+</body>
+</html>
