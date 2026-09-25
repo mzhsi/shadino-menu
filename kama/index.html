@@ -1,98 +1,685 @@
-
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#111111">
 <title>کاما | منوی رستوران</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script>
+<script src="config.js?v=5"></script>
+
 <style>
-:root{--black:#111;--dark:#1a1a1a;--gray:#6c6c6c;--line:#e7e7e7;--white:#fff;--soft:#fafafa}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:"Vazirmatn",Tahoma,sans-serif;background:#f4f4f4;color:var(--dark);min-height:100vh}
-header{background:var(--black);color:#fff;padding:54px 20px 72px;text-align:center}
-.logo{width:88px;height:88px;border:2px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:28px;font-weight:800}
-header h1{font-size:clamp(30px,7vw,52px);font-weight:800}
-header p{margin-top:10px;color:#cfcfcf;font-size:14px}
-.container{width:min(1100px,94%);margin:-34px auto 50px;position:relative}
-.toolbar{background:#fff;border:1px solid var(--line);border-radius:22px;padding:16px;box-shadow:0 12px 32px rgba(0,0,0,.08);margin-bottom:30px}
-.search{display:flex;align-items:center;gap:10px;border:1px solid #d8d8d8;border-radius:14px;padding:0 14px;background:#fff}
-.search span{font-size:21px}
-.search input{width:100%;border:0;outline:0;padding:14px 4px;font-family:inherit;font-size:14px;background:transparent}
-.categories{display:flex;gap:9px;overflow-x:auto;margin-top:13px;padding-bottom:3px}
-.categories::-webkit-scrollbar{height:4px}.categories::-webkit-scrollbar-thumb{background:#999;border-radius:20px}
-.cat{flex:0 0 auto;background:#fff;border:1px solid #cfcfcf;border-radius:11px;padding:10px 14px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;color:#222}
-.cat.active{background:#111;color:#fff;border-color:#111}
-.section{margin-bottom:34px}
-.section-title{display:flex;align-items:center;gap:10px;font-size:23px;font-weight:800;margin-bottom:16px}
-.section-title::after{content:"";height:1px;background:#d7d7d7;flex:1}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
-.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:17px;box-shadow:0 8px 20px rgba(0,0,0,.04);display:flex;flex-direction:column;gap:13px}
-.card.unavailable{opacity:.62}.name{font-weight:800;font-size:16px;line-height:1.8}
-.single-price{background:#111;color:#fff;border-radius:11px;padding:10px 11px;font-weight:800;display:flex;justify-content:space-between}
-.single-price span{font-size:12px;color:#ddd}.single-price strong{font-size:14px}
-.unavailable{border:1px dashed #aaa;border-radius:11px;padding:10px;text-align:center;color:#666;font-size:12px}
-.message{background:#fff;border:1px solid var(--line);padding:25px;border-radius:18px;text-align:center;color:#666;display:none}
-footer{text-align:center;color:#777;font-size:12px;padding:0 20px 30px}
-@media(max-width:600px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card{padding:12px}.name{font-size:14px}.single-price{padding:8px}.single-price strong{font-size:12px}.single-price span{font-size:10px}}
-@media(max-width:380px){.grid{grid-template-columns:1fr}}
+:root{
+  --black:#111;
+  --dark:#1a1a1a;
+  --gray:#6c6c6c;
+  --line:#e7e7e7;
+  --white:#fff;
+  --soft:#fafafa;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:"Vazirmatn",Tahoma,sans-serif;
+  background:#f4f4f4;
+  color:var(--dark);
+  min-height:100vh;
+}
+
+header{
+  background:var(--black);
+  color:#fff;
+  padding:54px 20px 72px;
+  text-align:center;
+}
+
+.logo{
+  width:88px;
+  height:88px;
+  border:2px solid #fff;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 18px;
+  font-size:28px;
+  font-weight:800;
+}
+
+header h1{
+  font-size:clamp(30px,7vw,52px);
+  font-weight:800;
+}
+
+header p{
+  margin-top:10px;
+  color:#cfcfcf;
+  font-size:14px;
+}
+
+.container{
+  width:min(1100px,94%);
+  margin:-34px auto 50px;
+  position:relative;
+}
+
+.toolbar{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:16px;
+  box-shadow:0 12px 32px rgba(0,0,0,.08);
+  margin-bottom:30px;
+}
+
+.search{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  border:1px solid #d8d8d8;
+  border-radius:14px;
+  padding:0 14px;
+  background:#fff;
+}
+
+.search span{
+  font-size:21px;
+}
+
+.search input{
+  width:100%;
+  border:0;
+  outline:0;
+  padding:14px 4px;
+  font-family:inherit;
+  font-size:14px;
+  background:transparent;
+}
+
+.categories{
+  display:flex;
+  gap:9px;
+  overflow-x:auto;
+  margin-top:13px;
+  padding-bottom:3px;
+}
+
+.categories::-webkit-scrollbar{
+  height:4px;
+}
+
+.categories::-webkit-scrollbar-thumb{
+  background:#999;
+  border-radius:20px;
+}
+
+.cat{
+  flex:0 0 auto;
+  background:#fff;
+  border:1px solid #cfcfcf;
+  border-radius:11px;
+  padding:10px 14px;
+  font-family:inherit;
+  font-weight:700;
+  font-size:13px;
+  cursor:pointer;
+  color:#222;
+}
+
+.cat.active{
+  background:#111;
+  color:#fff;
+  border-color:#111;
+}
+
+.section{
+  margin-bottom:34px;
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:23px;
+  font-weight:800;
+  margin-bottom:16px;
+}
+
+.section-title::after{
+  content:"";
+  height:1px;
+  background:#d7d7d7;
+  flex:1;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:14px;
+}
+
+.card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:17px;
+  box-shadow:0 8px 20px rgba(0,0,0,.04);
+  display:flex;
+  flex-direction:column;
+  gap:13px;
+}
+
+.card.unavailable{
+  opacity:.62;
+}
+
+.name{
+  font-weight:800;
+  font-size:16px;
+  line-height:1.8;
+}
+
+.single-price{
+  background:#111;
+  color:#fff;
+  border-radius:11px;
+  padding:10px 11px;
+  font-weight:800;
+  display:flex;
+  justify-content:space-between;
+}
+
+.single-price span{
+  font-size:12px;
+  color:#ddd;
+}
+
+.single-price strong{
+  font-size:14px;
+}
+
+.unavailable{
+  border:1px dashed #aaa;
+  border-radius:11px;
+  padding:10px;
+  text-align:center;
+  color:#666;
+  font-size:12px;
+}
+
+.message{
+  background:#fff;
+  border:1px solid var(--line);
+  padding:25px;
+  border-radius:18px;
+  text-align:center;
+  color:#666;
+  display:none;
+  margin-bottom:20px;
+}
+
+.loading{
+  background:#fff;
+  border:1px solid var(--line);
+  padding:25px;
+  border-radius:18px;
+  text-align:center;
+  color:#666;
+  margin-bottom:20px;
+}
+
+footer{
+  text-align:center;
+  color:#777;
+  font-size:12px;
+  padding:0 20px 30px;
+}
+
+@media(max-width:600px){
+  .grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+  }
+
+  .card{
+    padding:12px;
+  }
+
+  .name{
+    font-size:14px;
+  }
+
+  .single-price{
+    padding:8px;
+  }
+
+  .single-price strong{
+    font-size:12px;
+  }
+
+  .single-price span{
+    font-size:10px;
+  }
+}
+
+@media(max-width:380px){
+  .grid{
+    grid-template-columns:1fr;
+  }
+}
 </style>
 </head>
+
 <body>
+
 <header>
-<div class="logo">K</div>
-<h1 id="restaurantName">کاما</h1>
-<p id="restaurantSubtitle">منوی دیجیتال رستوران</p>
+  <div class="logo">K</div>
+  <h1 id="restaurantName">کاما</h1>
+  <p id="restaurantSubtitle">منوی دیجیتال رستوران</p>
 </header>
+
 <main class="container">
-<div class="toolbar">
-<div class="search"><span>⌕</span><input id="searchInput" type="search" placeholder="جست‌وجوی غذا یا نوشیدنی..."></div>
-<div id="categories" class="categories"></div>
-</div>
-<div id="message" class="message"></div>
-<div id="menu"></div>
+
+  <div class="toolbar">
+    <div class="search">
+      <span>⌕</span>
+      <input
+        id="searchInput"
+        type="search"
+        placeholder="جست‌وجوی غذا یا نوشیدنی..."
+      >
+    </div>
+
+    <div id="categories" class="categories"></div>
+  </div>
+
+  <div id="message" class="message"></div>
+
+  <div id="loading" class="loading">
+    در حال بارگذاری منو...
+  </div>
+
+  <div id="menu"></div>
+
 </main>
-<footer>تمامی قیمت‌ها به تومان هستند</footer>
+
+<footer>
+  تمامی قیمت‌ها به تومان هستند
+</footer>
+
 <script>
-const supabaseClient=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_PUBLISHABLE_KEY);
-const categoryOrder=["fastfood","drinks","salad_dessert"];
-const categoryTitles={fastfood:"🍔 فست‌فود و غذاهای اصلی",drinks:"🥤 نوشیدنی‌ها",salad_dessert:"🍰 سالادها و دسرها"};
-let products=[],activeCategory="all";
-const $=id=>document.getElementById(id);
-function formatPrice(v){const n=Number(v);return (Number.isFinite(n)?n.toLocaleString("fa-IR"):v)+" تومان";}
+const categoryOrder = [
+  "fastfood",
+  "drinks",
+  "salad_dessert"
+];
+
+const categoryTitles = {
+  fastfood: "🍔 فست‌فود و غذاهای اصلی",
+  drinks: "🥤 نوشیدنی‌ها",
+  salad_dessert: "🍰 سالادها و دسرها"
+};
+
+let products = [];
+let activeCategory = "all";
+
+const $ = (id) => document.getElementById(id);
+
+function showMessage(text){
+  const box = $("message");
+  box.style.display = "block";
+  box.textContent = text;
+}
+
+function hideMessage(){
+  $("message").style.display = "none";
+}
+
+function hideLoading(){
+  $("loading").style.display = "none";
+}
+
+function formatPrice(value){
+  const number = Number(value);
+
+  if(!Number.isFinite(number)){
+    return String(value ?? "-") + " تومان";
+  }
+
+  return number.toLocaleString("fa-IR") + " تومان";
+}
+
 function renderCategories(){
- const box=$("categories");box.innerHTML="";
- const all=document.createElement("button");all.className="cat active";all.textContent="همه";all.dataset.category="all";box.appendChild(all);
- categoryOrder.forEach(c=>{if(!products.some(p=>p.category===c))return;const b=document.createElement("button");b.className="cat";b.textContent=categoryTitles[c];b.dataset.category=c;box.appendChild(b);});
- box.querySelectorAll(".cat").forEach(b=>b.addEventListener("click",()=>{box.querySelectorAll(".cat").forEach(x=>x.classList.remove("active"));b.classList.add("active");activeCategory=b.dataset.category;renderMenu();}));
+
+  const box = $("categories");
+
+  box.innerHTML = "";
+
+  const all = document.createElement("button");
+  all.className = "cat active";
+  all.textContent = "همه";
+  all.dataset.category = "all";
+
+  box.appendChild(all);
+
+  categoryOrder.forEach((category) => {
+
+    const exists = products.some(
+      (item) => item.category === category
+    );
+
+    if(!exists) return;
+
+    const button = document.createElement("button");
+
+    button.className = "cat";
+    button.textContent = categoryTitles[category];
+    button.dataset.category = category;
+
+    box.appendChild(button);
+  });
+
+  box.querySelectorAll(".cat").forEach((button) => {
+
+    button.addEventListener("click", () => {
+
+      box
+        .querySelectorAll(".cat")
+        .forEach((item) => item.classList.remove("active"));
+
+      button.classList.add("active");
+
+      activeCategory = button.dataset.category;
+
+      renderMenu();
+    });
+
+  });
 }
+
 function createCard(item){
- const card=document.createElement("article");card.className="card"+(item.available===false?" unavailable":"");
- const name=document.createElement("h3");name.className="name";name.textContent=item.name;card.appendChild(name);
- if(item.available===false){const x=document.createElement("div");x.className="unavailable";x.textContent="فعلاً ناموجود";card.appendChild(x);return card;}
- const price=document.createElement("div");price.className="single-price";
- const label=document.createElement("span");label.textContent="قیمت";
- const value=document.createElement("strong");value.textContent=formatPrice(item.price);
- price.appendChild(label);price.appendChild(value);card.appendChild(price);return card;
+
+  const card = document.createElement("article");
+
+  card.className =
+    "card" +
+    (item.available === false ? " unavailable" : "");
+
+  const name = document.createElement("h3");
+
+  name.className = "name";
+  name.textContent = item.name || "بدون نام";
+
+  card.appendChild(name);
+
+  if(item.available === false){
+
+    const unavailable = document.createElement("div");
+
+    unavailable.className = "unavailable";
+    unavailable.textContent = "فعلاً ناموجود";
+
+    card.appendChild(unavailable);
+
+    return card;
+  }
+
+  const price = document.createElement("div");
+
+  price.className = "single-price";
+
+  const label = document.createElement("span");
+
+  label.textContent = "قیمت";
+
+  const value = document.createElement("strong");
+
+  value.textContent = formatPrice(item.price);
+
+  price.appendChild(label);
+  price.appendChild(value);
+
+  card.appendChild(price);
+
+  return card;
 }
+
 function renderMenu(){
- const q=$("searchInput").value.trim().toLowerCase(),menu=$("menu");menu.innerHTML="";let shown=0;
- categoryOrder.forEach(c=>{
-  if(activeCategory!=="all"&&activeCategory!==c)return;
-  const items=products.filter(p=>p.category===c).filter(p=>String(p.name||"").toLowerCase().includes(q)).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
-  if(!items.length)return;shown+=items.length;
-  const section=document.createElement("section");section.className="section";
-  const title=document.createElement("h2");title.className="section-title";title.textContent=categoryTitles[c];
-  const grid=document.createElement("div");grid.className="grid";items.forEach(i=>grid.appendChild(createCard(i)));
-  section.appendChild(title);section.appendChild(grid);menu.appendChild(section);
- });
- $("message").style.display=shown?"none":"block";$("message").textContent="آیتمی با این عبارت پیدا نشد.";
+
+  const query =
+    $("searchInput").value.trim().toLowerCase();
+
+  const menu = $("menu");
+
+  menu.innerHTML = "";
+
+  let shown = 0;
+
+  categoryOrder.forEach((category) => {
+
+    if(
+      activeCategory !== "all" &&
+      activeCategory !== category
+    ){
+      return;
+    }
+
+    const items = products
+      .filter(
+        (item) => item.category === category
+      )
+      .filter(
+        (item) =>
+          String(item.name || "")
+            .toLowerCase()
+            .includes(query)
+      )
+      .sort(
+        (a,b) =>
+          (Number(a.sort_order) || 0) -
+          (Number(b.sort_order) || 0)
+      );
+
+    if(!items.length) return;
+
+    shown += items.length;
+
+    const section = document.createElement("section");
+
+    section.className = "section";
+
+    const title = document.createElement("h2");
+
+    title.className = "section-title";
+    title.textContent = categoryTitles[category];
+
+    const grid = document.createElement("div");
+
+    grid.className = "grid";
+
+    items.forEach((item) => {
+
+      grid.appendChild(
+        createCard(item)
+      );
+
+    });
+
+    section.appendChild(title);
+    section.appendChild(grid);
+
+    menu.appendChild(section);
+  });
+
+  if(shown > 0){
+
+    hideMessage();
+
+  }else{
+
+    showMessage(
+      query
+        ? "آیتمی با این عبارت پیدا نشد."
+        : "هیچ آیتمی برای نمایش پیدا نشد."
+    );
+  }
 }
+
 async function loadMenu(){
- const {data,error}=await supabaseClient.from("products").select("id,name,category,price,available,sort_order").order("sort_order",{ascending:true}).order("id",{ascending:true});
- if(error){$("message").style.display=
+
+  hideMessage();
+
+  $("loading").style.display = "block";
+  $("loading").textContent =
+    "در حال اتصال به منوی کاما...";
+
+  try{
+
+    if(!window.supabase){
+
+      throw new Error(
+        "کتابخانه Supabase بارگذاری نشده است."
+      );
+    }
+
+    if(
+      !window.SUPABASE_URL ||
+      !window.SUPABASE_PUBLISHABLE_KEY
+    ){
+
+      throw new Error(
+        "config.js بارگذاری نشده یا مقادیر آن ناقص است."
+      );
+    }
+
+    const supabaseClient =
+      window.supabase.createClient(
+        window.SUPABASE_URL,
+        window.SUPABASE_PUBLISHABLE_KEY
+      );
+
+    const result =
+      await supabaseClient
+        .from("products")
+        .select(
+          "id,name,category,price,available,sort_order"
+        )
+        .order(
+          "sort_order",
+          { ascending:true }
+        )
+        .order(
+          "id",
+          { ascending:true }
+        );
+
+    if(result.error){
+
+      console.error(
+        "Supabase products error:",
+        result.error
+      );
+
+      throw new Error(
+        result.error.message ||
+        "خواندن جدول products انجام نشد."
+      );
+    }
+
+    products =
+      Array.isArray(result.data)
+        ? result.data
+        : [];
+
+    hideLoading();
+
+    renderCategories();
+    renderMenu();
+
+  }catch(error){
+
+    hideLoading();
+
+    console.error(
+      "KAMA menu error:",
+      error
+    );
+
+    showMessage(
+      "خطا: " +
+      (error.message || error)
+    );
+  }
+}
+
+$("searchInput").addEventListener(
+  "input",
+  renderMenu
+);
+
+window.addEventListener(
+  "error",
+  function(event){
+
+    console.error(
+      "JavaScript error:",
+      event.error || event.message
+    );
+
+    if(
+      !event.message ||
+      event.message.includes("ResizeObserver")
+    ){
+      return;
+    }
+
+    showMessage(
+      "خطای سایت: " +
+      event.message
+    );
+
+    hideLoading();
+  }
+);
+
+window.addEventListener(
+  "unhandledrejection",
+  function(event){
+
+    console.error(
+      "Unhandled promise rejection:",
+      event.reason
+    );
+
+    showMessage(
+      "خطای اتصال: " +
+      (
+        event.reason?.message ||
+        event.reason ||
+        "خطای ناشناخته"
+      )
+    );
+
+    hideLoading();
+  }
+);
+
+loadMenu();
+</script>
+
+</body>
+</html>
