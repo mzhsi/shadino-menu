@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -95,11 +95,4 @@ function renderMenu(){
 }
 async function loadMenu(){
  const {data,error}=await supabaseClient.from("products").select("id,name,category,price,available,sort_order").order("sort_order",{ascending:true}).order("id",{ascending:true});
- if(error){$("message").style.display="block";$("message").textContent="اتصال به منو انجام نشد. تنظیمات Supabase را بررسی کنید.";console.error(error);return;}
- products=data||[];renderCategories();renderMenu();
-}
-$("searchInput").addEventListener("input",renderMenu);loadMenu();
-</script>
-</body>
-  </html>
-  
+ if(error){$("message").style.display=
