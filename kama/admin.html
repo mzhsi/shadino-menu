@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111111">
+<title>کاما | پنل مدیریت</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<style>
+:root{--black:#111;--gray:#666;--line:#e5e5e5;--danger:#a61b1b;--ok:#1e6b45}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Vazirmatn",Tahoma,sans-serif;background:#f4f4f4;color:#1a1a1a;min-height:100vh}
+.wrap{width:min(1100px,94%);margin:25px auto 50px}
+.top{background:#111;color:#fff;padding:22px;border-radius:20px;display:flex;justify-content:space-between;gap:15px;align-items:center}
+.top h1{font-size:clamp(21px,4vw,31px)}.top p{margin-top:5px;color:#bbb;font-size:13px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:20px;padding:20px;margin-top:18px;box-shadow:0 10px 24px rgba(0,0,0,.05)}
+.login{max-width:520px;margin:70px auto}.login h1{text-align:center}.login p{text-align:center;color:var(--gray);font-size:13px;margin:8px 0 18px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.full{grid-column:1/-1}
+label{display:block;font-size:13px;font-weight:800;margin-bottom:7px}
+input,select,button{font:inherit}input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:11px;background:#fff;outline:none}
+input:focus,select:focus{border-color:#111;box-shadow:0 0 0 3px rgba(0,0,0,.08)}
+.btn{border:0;border-radius:11px;padding:11px 15px;cursor:pointer;font-weight:800}.btn:disabled{opacity:.55}
+.primary{background:#111;color:#fff}.secondary{background:#fff;border:1px solid #bbb}.danger{background:#fff3f3;color:var(--danger);border:1px solid #efc8c8}.logout{background:#fff;color:#111}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.hidden{display:none!important}
+.message{padding:11px 13px;border-radius:11px;margin-bottom:14px;font-size:13px}.ok{background:#eef8f2;color:var(--ok);border:1px solid #bcdcc9}.err{background:#fff3f3;color:#8d1b1b;border:1px solid #efc6c6}
+.list{display:grid;gap:10px;margin-top:14px}.item{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px;border:1px solid var(--line);border-radius:15px;background:#fcfcfc}
+.item strong{font-size:15px}.meta{font-size:12px;color:#666;margin-top:4px}.item-actions{display:flex;gap:7px;flex-wrap:wrap}
+.status{display:inline-block;padding:3px 7px;border-radius:999px;font-size:10px;font-weight:800;margin-right:5px}.on{background:#eaf7ef;color:#1e6b45}.off{background:#f3f3f3;color:#777}
+.hint{font-size:12px;color:#777}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.item{flex-direction:column;align-items:flex-start}.item-actions{width:100%}.item-actions .btn{flex:1}.top{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section id="loginView" class="panel login">
+<h1>پنل مدیریت کاما</h1><p>با ایمیل و رمز مدیر وارد شوید.</p><div id="loginMessage"></div>
+<div style="display:grid;gap:12px">
+<div><label for="email">ایمیل</label><input id="email" type="email" autocomplete="username"></div>
+<div><label for="password">رمز عبور</label><input id="password" type="password" autocomplete="current-password"></div>
+<button id="loginBtn" class="btn primary">ورود</button>
+</div>
+</section>
+
+<section id="adminView" class="hidden">
+<div class="top"><div><h1>پنل مدیریت کاما</h1><p>تغییر قیمت، افزودن، حذف و مدیریت موجودی</p></div><button id="logoutBtn" class="btn logout">خروج</button></div>
+
+<div class="panel">
+<div id="adminMessage"></div>
+<h2 id="formTitle">افزودن آیتم</h2>
+<div class="grid" style="margin-top:15px">
+<div><label for="name">نام آیتم</label><input id="name" placeholder="مثلاً برگر گوشت"></div>
+<div><label for="category">دسته‌بندی</label><select id="category"><option value="fastfood">فست‌فود و غذاهای اصلی</option><option value="drinks">نوشیدنی‌ها</option><option value="salad_dessert">سالادها و دسرها</option></select></div>
+<div><label for="price">قیمت (تومان)</label><input id="price" type="number" min="0" step="1000"></div>
+<div><label for="sortOrder">ترتیب نمایش</label><input id="sortOrder" type="number" min="0" step="1" value="0"></div>
+<div><label for="available">وضعیت</label><select id="available"><option value="true">موجود</option><option value="false">ناموجود</option></select></div>
+<div class="full actions"><button id="saveBtn" class="btn primary">ذخیره آیتم</button><button id="cancelBtn" class="btn secondary hidden">لغو ویرایش</button></div>
+</div></div>
+
+<div class="panel">
+<div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><h2>آیتم‌های منو</h2><div class="hint">با نام آیتم جست‌وجو کن.</div></div><input id="search" style="max-width:320px" placeholder="جست‌وجوی آیتم..."></div>
+<div id="products" class="list"></div>
+</div>
+</section>
+</div>
+
+<script>
+const supabaseClient=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_PUBLISHABLE_KEY);
+const $=id=>document.getElementById(id);let products=[],editingId=null;
+function msg(el,text,ok=false){el.innerHTML="";const d=document.createElement("div");d.className="message "+(ok?"ok":"err");d.textContent=text;el.appendChild(d)}
+function resetForm(){editingId=null;$("formTitle").textContent="افزودن آیتم";$("saveBtn").textContent="ذخیره آیتم";$("cancelBtn").classList.add("hidden");$("name").value="";$("category").value="fastfood";$("price").value="";$("sortOrder").value="0";$("available").value="true"}
+function startEdit(item){editingId=item.id;$("formTitle").textContent="ویرایش آیتم";$("saveBtn").textContent="ذخیره تغییرات";$("cancelBtn").classList.remove("hidden");$("name").value=item.name||"";$("category").value=item.category||"fastfood";$("price").value=item.price??"";$("sortOrder").value=item.sort_order??0;$("available").value=item.available===false?"false":"true";window.scrollTo({top:0,behavior:"smooth"})}
+function renderProducts(){const q=$("search").value.trim().toLowerCase(),box=$("products");box.innerHTML="";const list=products.filter(p=>String(p.name||"").toLowerCase().includes(q));if(!list.length){box.innerHTML='<div class="hint">آیتمی پیدا نشد.</div>';return}
+list.forEach(item=>{const card=document.createElement("div");card.className="item";const info=document.createElement("div");const title=document.createElement("strong");title.textContent=item.name;info.appendChild(title);const meta=document.createElement("div");meta.className="meta";meta.textContent=({fastfood:"فست‌فود و غذاهای اصلی",drinks:"نوشیدنی‌ها",salad_dessert:"سالادها و دسرها"}[item.category]||item.category)+" • "+Number(item.price).toLocaleString("fa-IR")+" تومان ";const badge=document.createElement("span");badge.className="status "+(item.available===false?"off":"on");badge.textContent=item.available===false?"ناموجود":"موجود";meta.appendChild(badge);info.appendChild(meta);
+const actions=document.createElement("div");actions.className="item-actions";const edit=document.createElement("button");edit.className="btn secondary";edit.textContent="ویرایش";edit.onclick=()=>startEdit(item);const toggle=document.createElement("button");toggle.className="btn secondary";toggle.textContent=item.available===false?"موجود کردن":"ناموجود کردن";toggle.onclick=()=>toggleAvailability(item);const del=document.createElement("button");del.className="btn danger";del.textContent="حذف";del.onclick=()=>deleteProduct(item);actions.appendChild(edit);actions.appendChild(toggle);actions.appendChild(del);card.appendChild(info);card.appendChild(actions);box.appendChild(card)})}
+async function loadProducts(){const {data,error}=await supabaseClient.from("products").select("*").order("sort_order",{ascending:true}).order("id",{ascending:true});if(error){msg($("adminMessage"),"خواندن آیتم‌ها انجام نشد: "+error.message);return}products=data||[];renderProducts()}
+async function saveProduct(){const name=$("name").value.trim(),category=$("category").value,price=Number($("price").value),sort_order=Number($("sortOrder").value||0),available=$("available").value==="true";$("adminMessage").innerHTML="";if(!name){msg($("adminMessage"),"نام آیتم را وارد کن.");return}if(!Number.isFinite(price)||price<0){msg($("adminMessage"),"قیمت را درست وارد کن.");return}$("saveBtn").disabled=true;
+try{const payload={name,category,price,sort_order,available};if(editingId!==null){const {data,error}=await supabaseClient.from("products").update(payload).eq("id",editingId).select().single();if(error)throw error;if(!data)throw new Error("آیتم پیدا نشد.");msg($("adminMessage"),"تغییرات با موفقیت ذخیره شد.",true)}else{const {data:existing,error:existingError}=await supabaseClient.from("products").select("id").eq("name",name).limit(1).maybeSingle();if(existingError)throw existingError;if(existing){msg($("adminMessage"),"این آیتم از قبل وجود دارد. برای تغییرش از «ویرایش» استفاده کن.");return}const {data,error}=await supabaseClient.from("products").insert(payload).select().single();if(error)throw error;if(!data)throw new Error("آیتم ذخیره نشد.");msg($("adminMessage"),"آیتم جدید اضافه شد.",true)}resetForm();await loadProducts()}catch(error){msg($("adminMessage"),"ذخیره انجام نشد: "+error.message)}finally{$("saveBtn").disabled=false}}
+async function toggleAvailability(item){const {error}=await supabaseClient.from("products").update({available:item.available===false}).eq("id",item.id);if(error){msg($("adminMessage"),"تغییر وضعیت انجام نشد: "+error.message);return}await loadProducts()}
+async function deleteProduct(item){if(!confirm("آیتم «"+item.name+"» حذف شود؟"))return;const {error}=await supabaseClient.from("products").delete().eq("id",item.id);if(error){msg($("adminMessage"),"حذف انجام نشد: "+error.message);return}msg($("adminMessage"),"آیتم حذف شد.",true);if(editingId===item.id)resetForm();await loadProducts()}
+async function startAdmin(){const {data:session}=await supabaseClient.auth.getSession();if(!session.session){$("loginView").classList.remove("hidden");$("adminView").classList.add("hidden");return}const uid=session.session.user.id;const {data,error}=await supabaseClient.from("admin_users").select("user_id").eq("user_id",uid).maybeSingle();if(error||!data){await supabaseClient.auth.signOut();$("loginView").classList.remove("hidden");$("adminView").classList.add("hidden");msg($("loginMessage"),"این حساب مجوز مدیریت ندارد.");return}$("loginView").classList.add("hidden");$("adminView").classList.remove("hidden");await loadProducts()}
+$("loginBtn").onclick=async()=>{const email=$("email").value.trim(),password=$("password").value;if(!email||!password){msg($("loginMessage"),"ایمیل و رمز عبور را وارد کن.");return}$("loginBtn").disabled=true;try{const {error}=await supabaseClient.auth.signInWithPassword({email,password});if(error){msg($("loginMessage"),"ورود ناموفق بود: "+error.message);return}await startAdmin()}finally{$("loginBtn").disabled=false}};
+$("logoutBtn").onclick=async()=>{await supabaseClient.auth.signOut();products=[];resetForm();$("products").innerHTML="";$("loginView").classList.remove("hidden");$("adminView").classList.add("hidden")};
+$("saveBtn").onclick=saveProduct;$("cancelBtn").onclick=resetForm;$("search").oninput=renderProducts;resetForm();startAdmin();
+</script>
+</body>
+</html>
